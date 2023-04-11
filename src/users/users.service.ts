@@ -28,8 +28,6 @@ export class UsersService {
     if (foundUserIndex === -1) {
       return 0;
     }
-    console.log(this.users.slice(foundUserIndex, 1));
-    console.log(body);
     this.users[foundUserIndex] = {
       ...this.users.slice(foundUserIndex, 1)[0],
       ...body,
