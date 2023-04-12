@@ -1,37 +1,46 @@
 import { Injectable } from '@nestjs/common';
+import { User } from '@prisma/client';
+
 import { CreateUserDto } from './dto/users.dto';
-import { v4 as myUuid } from 'uuid';
+import { PrismaService } from '../core/orm/prisma.service';
 
 @Injectable()
 export class UsersService {
-  private users: any = [];
-  async createUser(userData: CreateUserDto) {
-    const _id = myUuid();
-    this.users.push({ ...userData, _id });
-    return this.users[this.users.length - 1];
+  constructor(private prismaService: PrismaService) {}
+  async createUser(userData: CreateUserDto): Promise<User> {
+    return this.prismaService.user.create({
+      data: { ...userData },
+    });
   }
   async getUsers() {
-    return this.users;
+    return this.prismaService.user.findMany();
   }
 
+  async getUserById(userId) {
+    return this.prismaService.user.findFirst({
+      where: { id: userId },
+      include: { pets: true },
+    });
+  }
   async deleteUser(userId) {
-    const foundUserIndex = this.users.findIndex((user) => user._id === userId);
-    if (foundUserIndex === -1) {
-      return 0;
-    }
-    this.users.splice(foundUserIndex, 1);
-    return 1;
+    const foundUser = await this.prismaService.user.findFirst({
+      where: { id: userId },
+    });
+    if (!foundUser) return 0;
+
+    return this.prismaService.user.delete({
+      where: { id: userId },
+    });
   }
 
   async updateUser(userId, body) {
-    const foundUserIndex = this.users.findIndex((user) => user._id === userId);
-    if (foundUserIndex === -1) {
-      return 0;
-    }
-    this.users[foundUserIndex] = {
-      ...this.users.slice(foundUserIndex, 1)[0],
-      ...body,
-    };
-    return this.users[foundUserIndex];
+    const foundUser = await this.prismaService.user.findFirst({
+      where: { id: userId },
+    });
+    if (!foundUser) return 0;
+    return this.prismaService.user.update({
+      where: { id: userId },
+      data: { ...body },
+    });
   }
 }

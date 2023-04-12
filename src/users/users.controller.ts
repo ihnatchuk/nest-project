@@ -23,6 +23,17 @@ export class UsersController {
     return res.status(HttpStatus.OK).json(await this.userService.getUsers());
   }
 
+  @Get('/:id')
+  async getUserInfo(
+    @Req() req: any,
+    @Res() res: any,
+    @Param('id') userId: string,
+  ) {
+    const result = await this.userService.getUserById(userId);
+    return res
+      .status(result ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
+      .json(result ? result : 'User not found');
+  }
   @Post()
   async createUser(
     @Req() req: any,
