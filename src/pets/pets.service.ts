@@ -10,9 +10,15 @@ export class PetsService {
   }
 
   async getPetById(petId) {
-    return this.prismaService.pets.findFirst({
+    const petInfo = await this.prismaService.pets.findFirst({
       where: { id: petId },
     });
+    if (!petInfo) return 0;
+    const ownerName = await this.prismaService.user.findFirst({
+      where: { id: petInfo.ownerId },
+      select: { name: true },
+    });
+    return { ...petInfo, ownerName: ownerName.name };
   }
   async deletePet(petId) {
     const foundUser = await this.prismaService.pets.findFirst({
