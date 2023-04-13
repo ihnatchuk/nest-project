@@ -17,7 +17,7 @@ async function bootstrap() {
     .setTitle('Api example')
     .setDescription('The API description')
     .setVersion('1.0')
-    .addTag('Nest-project')
+    .addTag('Pets clinic')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/doc', app, document);

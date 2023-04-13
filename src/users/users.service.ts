@@ -43,4 +43,15 @@ export class UsersService {
       data: { ...body },
     });
   }
+
+  async addPet(userId, body) {
+    const foundUser = await this.prismaService.user.findFirst({
+      where: { id: userId },
+    });
+    console.log('foundUser', foundUser);
+    if (!foundUser) return 0;
+    return this.prismaService.pets.create({
+      data: { ownerId: userId, ...body },
+    });
+  }
 }

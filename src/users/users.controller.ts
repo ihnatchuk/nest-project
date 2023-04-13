@@ -13,6 +13,7 @@ import {
 import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
 import { UsersService } from './users.service';
 import { ApiTags } from '@nestjs/swagger';
+import { CreatePetDto } from '../pets/dto/pets.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -65,6 +66,20 @@ export class UsersController {
     @Param('id') userId: string,
   ) {
     const result = await this.userService.updateUser(userId, body);
+    return res
+      .status(result ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
+      .json(result ? result : 'User not found');
+  }
+
+  @Post('/:id/pets')
+  async createPet(
+    @Req() req: any,
+    @Body() body: CreatePetDto,
+    @Res() res: any,
+    @Param('id') userId: string,
+  ) {
+    const result = await this.userService.addPet(userId, body);
+    console.log(result);
     return res
       .status(result ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
       .json(result ? result : 'User not found');
